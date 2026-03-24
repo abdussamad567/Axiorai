@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>AI Resume Builder</title>
+  <style>
+    body {
+      font-family: Arial;
+      background: #0f172a;
+      color: white;
+      text-align: center;
+    }
+
+    input, textarea {
+      width: 300px;
+      padding: 10px;
+      margin: 5px;
+    }
+
+    button {
+      padding: 10px 20px;
+      margin-top: 10px;
+      cursor: pointer;
+    }
+
+    #resume {
+      background: white;
+      color: black;
+      width: 800px;
+      margin: 30px auto;
+      padding: 30px;
+      text-align: left;
+    }
+
+    h1 {
+      border-bottom: 2px solid black;
+    }
+
+    h2 {
+      border-bottom: 1px solid gray;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>AI Resume Builder 🚀</h1>
+
+  <input id="name" placeholder="Full Name"><br>
+  <input id="email" placeholder="Email"><br>
+  <input id="phone" placeholder="Phone"><br>
+  <input id="location" placeholder="Location"><br>
+
+  <input id="role" placeholder="Role (e.g. Data Analyst)"><br>
+  <input id="experience" placeholder="Years of Experience"><br>
+
+  <textarea id="skills" placeholder="Skills"></textarea><br>
+  <textarea id="education" placeholder="Education"></textarea><br>
+  <textarea id="projects" placeholder="Projects"></textarea><br>
+
+  <button onclick="generateResume()">Generate Resume</button>
+
+  <div id="resume"></div>
+
+  <script>
+    async function generateResume() {
+      const data = {
+        name: document.getElementById("name").value,
+        email: document.getElementById("email").value,
+        phone: document.getElementById("phone").value,
+        location: document.getElementById("location").value,
+        role: document.getElementById("role").value,
+        experience: document.getElementById("experience").value,
+        skills: document.getElementById("skills").value,
+        education: document.getElementById("education").value,
+        projects: document.getElementById("projects").value,
+      };
+
+      document.getElementById("resume").innerHTML = "Generating... ⏳";
+
+      const response = await fetch("http://localhost:3000/generate-resume", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+      });
+
+      const result = await response.json();
+
+      document.getElementById("resume").innerHTML = result.resume;
+    }
+  </script>
+
+</body>
+</html>
