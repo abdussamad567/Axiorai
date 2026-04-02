@@ -82,32 +82,26 @@ app.post("/generate-website", async (req, res) => {
 
   try {
     const response = await client.chat.completions.create({
-      model: "openai/gpt-4o-mini",
+      model: "gpt-4o-mini",
       messages: [
         {
           role: "user",
-          content: `
-Generate a modern responsive website.
-
-User Prompt: ${prompt}
-
-IMPORTANT:
-- Return ONLY HTML
-- Include CSS inside <style>
-- No explanation
-          `,
+          content: `Generate a simple modern website HTML for: ${prompt}`,
         },
       ],
     });
 
-    let html = response.choices[0].message.content;
+    res.json({
+      result: response.choices[0].message.content,
+    });
 
-    html = html.replace(/```html/g, "").replace(/```/g, "");
+  } catch (err) {
+    console.error("Website Error:", err);
 
-    res.json({ html });
-
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({
+      error: "Website generation failed",
+      details: err.message,
+    });
   }
 });
 

@@ -26,8 +26,7 @@ export default function WebsiteBuilder() {
 
       console.log("Response:", data); // ✅ debug
 
-      setHtml(data.html); // ✅ backend already cleaned
-
+setHtml(data.result);
     } catch (error) {
       console.error("Error:", error);
       alert("Something went wrong. Check console.");

@@ -60,7 +60,7 @@ const features = [
     icon: Users,
     title: "Interview Simulator",
     description: "Practice interviews with AI.",
-    link: "#",
+    link: "/interview-simulator", // ✅ FIXED
   },
   {
     icon: FileText,
