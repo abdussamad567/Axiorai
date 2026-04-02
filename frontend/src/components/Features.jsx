@@ -24,37 +24,37 @@ const features = [
     icon: Globe,
     title: "Website Builder",
     description: "Build your personal website in minutes.",
-    link: "#",
+    link: "/website-builder", // ✅ FIXED
   },
   {
     icon: MessageSquare,
     title: "Caption Generator",
     description: "Generate engaging social media captions.",
-    link: "#",
+    link: "/caption-generator",
   },
   {
     icon: PenTool,
     title: "Cover Letter AI",
     description: "Create personalized cover letters instantly.",
-    link: "#",
+    link: "/cover-letter-generator",
   },
   {
     icon: Target,
     title: "Job Fit Score",
     description: "Analyze how well you match a job.",
-    link: "#",
+    link: "JobFitScore", // ✅ FIXED
   },
   {
     icon: Github,
     title: "GitHub Portfolio",
     description: "Auto-sync your projects beautifully.",
-    link: "#",
+    link: "/Github-Portfolio", // ✅ FIXED
   },
   {
     icon: Search,
     title: "Portfolio Critic",
     description: "AI feedback on your portfolio.",
-    link: "#",
+    link: "/portfolio-critic", // ✅ FIXED
   },
   {
     icon: Users,

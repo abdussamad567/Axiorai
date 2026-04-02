@@ -7,17 +7,21 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "server": "node ../index.js",
+    "fullstack": "concurrently \"npm run server\" \"npm run dev\""
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.2.4",
     "class-variance-authority": "^0.7.1",
+    "file-saver": "^2.0.5",
     "framer-motion": "^12.38.0",
     "html2pdf.js": "^0.14.0",
+    "jszip": "^3.10.1",
     "lucide-react": "^0.577.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
-    "react-router-dom": "^7.13.1"
+    "react-router-dom": "^7.13.2"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.4",

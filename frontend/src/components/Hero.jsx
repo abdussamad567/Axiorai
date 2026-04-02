@@ -12,8 +12,7 @@ export default function Hero() {
     <section className="relative min-h-screen flex items-center justify-center bg-[#f3f4f6] text-black overflow-hidden px-4">
 
       {/* 🌈 BIG ROUNDED BACKGROUND */}
-      <div className="absolute inset-10 bg-white rounded-[40px] shadow-xl"></div>
-
+<div className="absolute inset-10 bg-white/70 backdrop-blur-xl rounded-[40px] shadow-xl z-0"></div>
       {/* 🌈 FLOATING CARDS */}
       <div className="absolute left-10 top-20 rotate-[-15deg] animate-float">
         <div className="w-32 h-44 bg-purple-200 rounded-2xl shadow"></div>
