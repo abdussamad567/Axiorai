@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
+import { logActivity } from "./utils/activity";
+import { checkUsageLimit } from "./utils/usage";
 
 export default function GithubPortfolio() {
   const [username, setUsername] = useState("");
@@ -10,19 +12,40 @@ export default function GithubPortfolio() {
 
   // 🔥 FETCH REPOS
   const fetchRepos = async () => {
+    // ✅ CHECK LIMIT FIRST
+    const canUse = await checkUsageLimit();
+
+    if (!canUse) {
+      alert("Free limit reached. Upgrade your plan 🚀");
+      return;
+    }
+
     setLoading(true);
     try {
       const res = await fetch(`http://localhost:3000/github-repos/${username}`);
       const data = await res.json();
       setRepos(data);
+
+      // ✅ TRACK ACTIVITY
+      await logActivity("Synced GitHub Repos");
+
     } catch (err) {
       alert("Error fetching repos");
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   // 🔥 GENERATE README
   const generateReadme = async (repo) => {
+    // ✅ CHECK LIMIT AGAIN (each action counts)
+    const canUse = await checkUsageLimit();
+
+    if (!canUse) {
+      alert("Free limit reached. Upgrade your plan 🚀");
+      return;
+    }
+
     setSelectedRepo(repo);
     setLoading(true);
 
@@ -40,11 +63,15 @@ export default function GithubPortfolio() {
 
       const data = await res.json();
       setReadme(data.readme);
+
+      // ✅ TRACK ACTIVITY
+      await logActivity("Generated README");
+
     } catch (err) {
       alert("Error generating README");
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   return (

@@ -1,5 +1,8 @@
 import React, { useState, useRef } from "react";
 import { motion } from "framer-motion";
+import { logActivity } from "./utils/activity"; // ✅ ADD THIS
+
+await logActivity("Started Interview Simulator");
 
 export default function InterviewSimulator() {
   const [jobDesc, setJobDesc] = useState("");

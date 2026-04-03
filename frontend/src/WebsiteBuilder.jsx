@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { logActivity } from "./utils/activity";
+import { checkUsageLimit } from "./utils/usage";
 
 export default function WebsiteBuilder() {
   const [prompt, setPrompt] = useState("");
@@ -11,6 +13,13 @@ export default function WebsiteBuilder() {
       return;
     }
 
+    // ✅ CHECK LIMIT
+    const canUse = await checkUsageLimit();
+    if (!canUse) {
+      alert("Free limit reached. Upgrade 🚀");
+      return;
+    }
+
     try {
       setLoading(true);
 
@@ -19,17 +28,18 @@ export default function WebsiteBuilder() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ prompt }), // ✅ ONLY THIS
+        body: JSON.stringify({ prompt }),
       });
 
       const data = await response.json();
+      setHtml(data.result);
 
-      console.log("Response:", data); // ✅ debug
+      // ✅ TRACK
+      await logActivity("Generated Website");
 
-setHtml(data.result);
     } catch (error) {
-      console.error("Error:", error);
-      alert("Something went wrong. Check console.");
+      console.error(error);
+      alert("Something went wrong.");
     } finally {
       setLoading(false);
     }
@@ -45,36 +55,31 @@ setHtml(data.result);
 
         <div className="grid grid-cols-2 gap-6">
 
-          {/* LEFT SIDE */}
           <div>
             <textarea
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
-              placeholder="Describe your website... (e.g. gym, portfolio, restaurant)"
-              className="w-full h-60 p-4 border rounded-xl outline-none focus:ring-2 focus:ring-purple-500"
+              className="w-full h-60 p-4 border rounded-xl"
             />
 
             <button
               onClick={handleGenerate}
               disabled={loading}
-              className="mt-4 bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-xl transition"
+              className="mt-4 bg-purple-600 text-white px-6 py-2 rounded-xl"
             >
               {loading ? "Generating..." : "Generate"}
             </button>
           </div>
 
-          {/* RIGHT SIDE */}
           <div className="border rounded-xl overflow-hidden bg-white">
             {html ? (
               <iframe
-                title="preview"
-                sandbox="allow-same-origin"
                 srcDoc={html}
                 className="w-full h-[500px]"
               />
             ) : (
               <div className="flex items-center justify-center h-[500px] text-gray-400">
-                Live preview will appear here...
+                Preview here...
               </div>
             )}
           </div>

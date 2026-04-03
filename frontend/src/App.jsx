@@ -14,6 +14,7 @@ import JobFitScore from "./JobFitScore";
 import GithubPortfolio from "./GithubPortfolio";
 import PortfolioCritic from "./PortfolioCritic";
 import InterviewSimulator from "./InterviewSimulator";
+import Account from "./Account";
 
 
 
@@ -39,6 +40,7 @@ function App() {
 
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/account" element={<Account />} />
 
       </Routes>
     </BrowserRouter>

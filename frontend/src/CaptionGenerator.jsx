@@ -1,5 +1,7 @@
 import React, { useRef, useState } from "react";
 import { motion } from "framer-motion";
+import { logActivity } from "./utils/activity"; // ✅ correct
+import { checkUsageLimit } from "./utils/usage"; // ✅ correct
 
 export default function CaptionGenerator() {
   const fileInputRef = useRef(null);
@@ -25,32 +27,46 @@ export default function CaptionGenerator() {
   };
 
   // 🔥 MAIN FUNCTION
-  const handleGenerate = async () => {
-    try {
-      setLoading(true);
+ const handleGenerate = async () => {
+  try {
+    setLoading(true);
 
-      const res = await fetch("http://localhost:3000/generate-caption", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          description,
-          variants,
-          hashtags,
-          emojis,
-        }),
-      });
+    // ✅ CALL API FIRST
+    const res = await fetch("http://localhost:3000/generate-caption", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        description,
+        variants,
+        hashtags,
+        emojis,
+      }),
+    });
 
-      const data = await res.json();
-      setCaptions(data.captions);
+    const data = await res.json();
 
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
+    // ✅ CHECK LIMIT AFTER API
+    const canUse = await checkUsageLimit();
+
+    if (!canUse) {
+      alert("Free limit reached 🚀");
+      return;
     }
-  };
+
+    // ✅ SET RESULT
+    setCaptions(data.captions);
+
+    // ✅ TRACK
+    await logActivity("Generated Caption");
+
+  } catch (err) {
+    console.error(err);
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="min-h-screen bg-[#0f0f0f] text-white px-6 py-10">

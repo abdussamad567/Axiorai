@@ -2,6 +2,8 @@ import { useRef, useState } from "react";
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
 import { motion } from "framer-motion";
+import { logActivity } from "./utils/activity";
+import { checkUsageLimit } from "./utils/usage";
 
 export default function PortfolioBuilder() {
   const step3Ref = useRef(null);
@@ -26,8 +28,16 @@ export default function PortfolioBuilder() {
     });
   };
 
-  // 🔥 AI GENERATE
+  // 🔥 GENERATE PORTFOLIO
   const handleGenerate = async () => {
+
+    // ✅ CHECK USAGE LIMIT
+    const canUse = await checkUsageLimit();
+    if (!canUse) {
+      alert("Free limit reached. Upgrade your plan 🚀");
+      return;
+    }
+
     setLoading(true);
     setHtml("");
 
@@ -42,12 +52,16 @@ export default function PortfolioBuilder() {
 
       const data = await res.json();
       setHtml(data.html);
+
+      // ✅ TRACK ACTIVITY
+      await logActivity("Built Portfolio");
+
     } catch (err) {
       console.error(err);
       alert("Error generating portfolio");
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   // 🔥 DOWNLOAD ZIP
@@ -61,17 +75,13 @@ export default function PortfolioBuilder() {
   return (
     <div className="h-screen overflow-y-scroll snap-y snap-mandatory relative bg-[#f3f4f6]">
 
-      {/* 🌈 FLOATING CARDS */}
-      <div className="absolute left-10 top-20 rotate-[-15deg] animate-float z-0">
+      {/* FLOATING CARDS */}
+      <div className="absolute left-10 top-20 rotate-[-15deg] z-0">
         <div className="w-32 h-44 bg-purple-200 rounded-2xl shadow"></div>
       </div>
 
-      <div className="absolute right-20 top-32 rotate-[15deg] animate-floatSlow z-0">
+      <div className="absolute right-20 top-32 rotate-[15deg] z-0">
         <div className="w-36 h-48 bg-blue-200 rounded-2xl shadow"></div>
-      </div>
-
-      <div className="absolute left-40 bottom-20 rotate-[10deg] animate-float z-0">
-        <div className="w-28 h-40 bg-green-200 rounded-2xl shadow"></div>
       </div>
 
       {/* HERO */}
@@ -98,9 +108,9 @@ export default function PortfolioBuilder() {
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
           className="w-[90%] h-[90%] bg-white/70 backdrop-blur-xl rounded-[40px] shadow-xl flex p-10 gap-10 relative z-10"
         >
+
           {/* LEFT FORM */}
           <div className="w-1/2 space-y-4">
 
@@ -147,7 +157,6 @@ export default function PortfolioBuilder() {
             className="w-1/2"
             initial={{ opacity: 0, x: 40 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
           >
             <div className="rounded-2xl overflow-hidden shadow-xl border bg-white">
 
@@ -160,10 +169,8 @@ export default function PortfolioBuilder() {
 
               {/* CONTENT */}
               {loading ? (
-                <div className="p-6 text-gray-500 animate-pulse">
-                  <p>Analyzing...</p>
-                  <p>Designing UI...</p>
-                  <p>Building website...</p>
+                <div className="p-6 text-gray-500">
+                  <p>Building your portfolio...</p>
                 </div>
               ) : html ? (
                 <iframe
@@ -178,6 +185,7 @@ export default function PortfolioBuilder() {
               )}
             </div>
           </motion.div>
+
         </motion.div>
       </section>
     </div>

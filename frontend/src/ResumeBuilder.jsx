@@ -1,5 +1,8 @@
 import { useState, useRef } from "react";
 import html2pdf from "html2pdf.js";
+import { logActivity } from "./utils/activity";
+
+await logActivity("Created Resume");
 
 export default function ResumeBuilder() {
   const [form, setForm] = useState({});

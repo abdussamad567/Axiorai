@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { supabase } from "../supabase"; // ✅ import supabase
 
 const Input = ({ label, type, value, onChange, rightIcon, onIconClick }) => (
   <div className="flex flex-col gap-1 relative">
@@ -25,6 +26,48 @@ const Input = ({ label, type, value, onChange, rightIcon, onIconClick }) => (
 export default function Login() {
   const [show, setShow] = useState(false);
 
+  // 🔥 NEW STATES
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const navigate = useNavigate();
+
+  // 🔥 LOGIN FUNCTION
+  const handleLogin = async () => {
+    if (!email || !password) {
+      alert("Please fill all fields");
+      return;
+    }
+
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) {
+      alert(error.message);
+    } else {
+      // ✅ get session (JWT)
+      const session = data.session;
+
+localStorage.setItem("token", session.access_token); // 🔥 ADD THIS
+
+console.log("User:", data.user);
+console.log("JWT:", session.access_token);
+
+alert("Login successful 🚀");
+
+navigate("/");
+    }
+  };
+
+  // 🔥 GOOGLE LOGIN (optional)
+  const handleGoogleLogin = async () => {
+    await supabase.auth.signInWithOAuth({
+      provider: "google",
+    });
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center">
       <motion.div
@@ -37,19 +80,37 @@ export default function Login() {
         </h2>
 
         <div className="flex flex-col gap-4">
-          <Input label="Email" type="email" />
+          {/* ✅ EMAIL */}
+          <Input
+            label="Email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+
+          {/* ✅ PASSWORD */}
           <Input
             label="Password"
             type={show ? "text" : "password"}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             rightIcon={show ? "🙈" : "👁️"}
             onIconClick={() => setShow(!show)}
           />
 
-          <button className="w-full py-2 bg-black text-white rounded-xl">
+          {/* 🔥 LOGIN BUTTON */}
+          <button
+            onClick={handleLogin}
+            className="w-full py-2 bg-black text-white rounded-xl"
+          >
             Login
           </button>
 
-          <button className="w-full py-2 border rounded-xl">
+          {/* 🔥 GOOGLE LOGIN */}
+          <button
+            onClick={handleGoogleLogin}
+            className="w-full py-2 border rounded-xl"
+          >
             Continue with Google
           </button>
         </div>

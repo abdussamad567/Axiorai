@@ -1,5 +1,7 @@
 import React, { useState, useRef } from "react";
 import { motion } from "framer-motion";
+import { logActivity } from "./utils/activity"; // ✅ correct
+import { checkUsageLimit } from "./utils/usage"; // ✅ add this
 
 export default function CoverLetterGenerator() {
   const [jobTitle, setJobTitle] = useState("");
@@ -13,8 +15,17 @@ export default function CoverLetterGenerator() {
 
   // 🔥 API CALL
   const generateLetter = async () => {
-    setLoading(true);
+    // ✅ CHECK LIMIT FIRST
+    const canUse = await checkUsageLimit();
+
+    if (!canUse) {
+      alert("Free limit reached. Upgrade your plan 🚀");
+      return;
+    }
+
     try {
+      setLoading(true);
+
       const res = await fetch("http://localhost:3000/generate-cover-letter", {
         method: "POST",
         headers: {
@@ -30,11 +41,16 @@ export default function CoverLetterGenerator() {
 
       const data = await res.json();
       setResult(data.coverLetter);
+
+      // ✅ TRACK ACTIVITY AFTER SUCCESS
+      await logActivity("Generated Cover Letter");
+
     } catch (err) {
       console.error(err);
       alert("Error generating cover letter");
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (
