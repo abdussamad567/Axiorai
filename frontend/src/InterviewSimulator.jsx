@@ -1,8 +1,7 @@
 import React, { useState, useRef } from "react";
 import { motion } from "framer-motion";
-import { logActivity } from "./utils/activity"; // ✅ ADD THIS
-
-await logActivity("Started Interview Simulator");
+import { logActivity } from "./utils/activity";
+import { checkUsageLimit } from "./utils/usage";
 
 export default function InterviewSimulator() {
   const [jobDesc, setJobDesc] = useState("");
@@ -18,11 +17,19 @@ export default function InterviewSimulator() {
 
   const fileRef = useRef(null);
 
-  // 🔥 GENERATE QUESTIONS
+  // 🔥 START INTERVIEW
   const startInterview = async () => {
+    const canUse = await checkUsageLimit();
+    if (!canUse) {
+      alert("Free limit reached 🚀");
+      return;
+    }
+
     setLoading(true);
 
     try {
+      await logActivity("Started Interview Simulator");
+
       const res = await fetch("http://localhost:3000/interview", {
         method: "POST",
         headers: {
@@ -39,11 +46,11 @@ export default function InterviewSimulator() {
 
       setQuestions(data.questions);
       setCurrent(0);
-    } catch (err) {
+    } catch {
       alert("Error starting interview");
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   // NEXT QUESTION
@@ -62,28 +69,37 @@ export default function InterviewSimulator() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0f0f0f] text-white p-6">
+    <div className="min-h-screen bg-[#0f0f0f] text-white px-4 md:px-6 py-8">
 
       {/* HEADER */}
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-        <h1 className="text-4xl font-bold">Interview Simulator</h1>
-        <p className="text-gray-400">Practice interviews with AI</p>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="max-w-4xl mx-auto mb-6"
+      >
+        <h1 className="text-2xl md:text-4xl font-bold">
+          Interview Simulator
+        </h1>
+        <p className="text-gray-400 text-sm md:text-base">
+          Practice interviews with AI
+        </p>
       </motion.div>
 
-      {/* INPUTS */}
+      {/* SETUP */}
       {questions.length === 0 && (
-        <div className="mt-6 space-y-4">
+        <div className="max-w-4xl mx-auto bg-[#1a1a1a] p-4 md:p-6 rounded-2xl space-y-4">
 
           <textarea
-            placeholder="Job Description..."
-            className="w-full p-3 bg-[#111] rounded-lg"
+            placeholder="Paste Job Description..."
+            className="w-full p-3 bg-[#111] rounded-lg border border-gray-700 text-sm md:text-base"
+            rows="4"
             value={jobDesc}
             onChange={(e) => setJobDesc(e.target.value)}
           />
 
           <input
             placeholder="Portfolio Link"
-            className="w-full p-3 bg-[#111] rounded-lg"
+            className="w-full p-3 bg-[#111] rounded-lg border border-gray-700"
             value={portfolio}
             onChange={(e) => setPortfolio(e.target.value)}
           />
@@ -91,9 +107,15 @@ export default function InterviewSimulator() {
           {/* RESUME */}
           <div
             onClick={() => fileRef.current?.click()}
-            className="border-2 border-dashed p-4 text-center cursor-pointer"
+            className="border-2 border-dashed border-gray-600 rounded-xl p-4 text-center cursor-pointer hover:border-purple-500 transition"
           >
-            {resume ? resume.name : "Upload Resume"}
+            {resume ? (
+              <span className="text-green-400 text-sm">{resume.name}</span>
+            ) : (
+              <span className="text-gray-400 text-sm">
+                Click to upload resume
+              </span>
+            )}
           </div>
 
           <input
@@ -105,38 +127,46 @@ export default function InterviewSimulator() {
 
           <button
             onClick={startInterview}
-            className="bg-purple-600 px-6 py-3 rounded-xl"
+            className="w-full bg-purple-600 hover:bg-purple-700 py-3 rounded-xl font-semibold"
           >
             {loading ? "Starting..." : "Start Interview"}
           </button>
         </div>
       )}
 
-      {/* QUESTIONS */}
+      {/* QUESTIONS UI */}
       {questions.length > 0 && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="mt-10 bg-[#1a1a1a] p-6 rounded-xl"
+          className="max-w-3xl mx-auto mt-8 bg-[#1a1a1a] p-5 md:p-6 rounded-2xl"
         >
-          <h2 className="text-xl mb-4">
-            Question {current + 1} / {questions.length}
+
+          {/* PROGRESS */}
+          <div className="mb-4 text-sm text-gray-400">
+            Question {current + 1} of {questions.length}
+          </div>
+
+          {/* QUESTION */}
+          <h2 className="text-lg md:text-xl font-semibold mb-4">
+            {questions[current]}
           </h2>
 
-          <p className="mb-4 text-lg">{questions[current]}</p>
-
+          {/* ANSWER */}
           <textarea
-            placeholder="Your answer..."
-            className="w-full p-3 bg-[#111] rounded-lg"
+            placeholder="Type your answer..."
+            className="w-full p-3 bg-[#111] rounded-lg border border-gray-700 text-sm md:text-base"
+            rows="5"
             value={answer}
             onChange={(e) => setAnswer(e.target.value)}
           />
 
+          {/* BUTTON */}
           <button
             onClick={nextQuestion}
-            className="mt-4 bg-green-600 px-6 py-2 rounded-lg"
+            className="mt-4 w-full bg-green-600 hover:bg-green-700 py-2 rounded-lg font-semibold"
           >
-            Next
+            Next →
           </button>
         </motion.div>
       )}

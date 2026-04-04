@@ -1,7 +1,7 @@
 import React, { useState, useRef } from "react";
 import { motion } from "framer-motion";
-import { logActivity } from "./utils/activity"; // ✅ correct
-import { checkUsageLimit } from "./utils/usage"; // ✅ add this
+import { logActivity } from "./utils/activity";
+import { checkUsageLimit } from "./utils/usage";
 
 export default function CoverLetterGenerator() {
   const [jobTitle, setJobTitle] = useState("");
@@ -13,13 +13,10 @@ export default function CoverLetterGenerator() {
   const fileRef = useRef(null);
   const [resumeFile, setResumeFile] = useState(null);
 
-  // 🔥 API CALL
   const generateLetter = async () => {
-    // ✅ CHECK LIMIT FIRST
     const canUse = await checkUsageLimit();
-
     if (!canUse) {
-      alert("Free limit reached. Upgrade your plan 🚀");
+      alert("Free limit reached 🚀");
       return;
     }
 
@@ -42,11 +39,8 @@ export default function CoverLetterGenerator() {
       const data = await res.json();
       setResult(data.coverLetter);
 
-      // ✅ TRACK ACTIVITY AFTER SUCCESS
       await logActivity("Generated Cover Letter");
-
     } catch (err) {
-      console.error(err);
       alert("Error generating cover letter");
     } finally {
       setLoading(false);
@@ -54,24 +48,32 @@ export default function CoverLetterGenerator() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0f0f0f] text-white px-6 py-10">
+    <div className="min-h-screen bg-[#0f0f0f] text-white px-4 md:px-6 py-8 md:py-10">
 
       {/* HEADER */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="max-w-6xl mx-auto mb-10"
+        className="max-w-6xl mx-auto mb-8 md:mb-10"
       >
-        <h1 className="text-5xl font-bold">AI Cover Letter Generator</h1>
-        <p className="text-gray-400 mt-3">
+        <h1 className="text-2xl sm:text-3xl md:text-5xl font-bold">
+          AI Cover Letter Generator
+        </h1>
+
+        <p className="text-gray-400 mt-3 text-sm md:text-base">
           Generate personalized cover letters using AI
         </p>
       </motion.div>
 
-      <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-6">
+      {/* MAIN */}
+      <div className="max-w-6xl mx-auto flex flex-col md:grid md:grid-cols-3 gap-6">
 
         {/* LEFT */}
-        <div className="md:col-span-2 bg-[#1a1a1a] p-6 rounded-2xl">
+        <motion.div
+          initial={{ opacity: 0, x: -40 }}
+          animate={{ opacity: 1, x: 0 }}
+          className="md:col-span-2 bg-[#1a1a1a] p-4 md:p-6 rounded-2xl shadow-xl"
+        >
 
           <Input label="Job Title" value={jobTitle} setValue={setJobTitle} />
           <Input label="Company" value={company} setValue={setCompany} />
@@ -79,7 +81,8 @@ export default function CoverLetterGenerator() {
           {/* JOB DESCRIPTION */}
           <textarea
             placeholder="Paste Job Description..."
-            className="w-full mt-4 p-3 bg-[#111] rounded-lg"
+            className="w-full mt-4 p-3 bg-[#111] rounded-lg text-sm md:text-base border border-gray-700 focus:ring-2 focus:ring-purple-500"
+            rows="4"
             value={jobDesc}
             onChange={(e) => setJobDesc(e.target.value)}
           />
@@ -87,9 +90,15 @@ export default function CoverLetterGenerator() {
           {/* RESUME UPLOAD */}
           <div
             onClick={() => fileRef.current?.click()}
-            className="mt-4 border-2 border-dashed border-gray-600 p-6 text-center cursor-pointer"
+            className="mt-4 border-2 border-dashed border-gray-600 rounded-xl p-6 text-center cursor-pointer hover:border-purple-500 transition"
           >
-            {resumeFile ? resumeFile.name : "Upload Resume"}
+            {resumeFile ? (
+              <p className="text-green-400 text-sm">{resumeFile.name}</p>
+            ) : (
+              <p className="text-gray-400 text-sm">
+                Click to upload resume (PDF, DOCX)
+              </p>
+            )}
           </div>
 
           <input
@@ -100,41 +109,57 @@ export default function CoverLetterGenerator() {
           />
 
           {/* BUTTON */}
-          <button
+          <motion.button
             onClick={generateLetter}
-            className="mt-6 w-full bg-purple-600 py-3 rounded-xl"
+            whileTap={{ scale: 0.95 }}
+            className="mt-6 w-full bg-purple-600 hover:bg-purple-700 py-3 rounded-xl font-semibold text-sm md:text-base"
           >
             {loading ? "Generating..." : "Generate Cover Letter"}
-          </button>
-        </div>
+          </motion.button>
+        </motion.div>
 
         {/* RIGHT */}
-        <div className="bg-[#1a1a1a] p-6 rounded-2xl">
-          <h3 className="mb-4">Tips</h3>
+        <motion.div
+          initial={{ opacity: 0, x: 40 }}
+          animate={{ opacity: 1, x: 0 }}
+          className="bg-[#1a1a1a] p-4 md:p-6 rounded-2xl shadow-xl"
+        >
+          <h3 className="mb-4 font-semibold">Tips</h3>
+
           <ul className="text-gray-400 text-sm space-y-2">
             <li>• Paste full job description</li>
             <li>• Upload resume for better results</li>
             <li>• Keep inputs detailed</li>
           </ul>
-        </div>
+        </motion.div>
       </div>
 
       {/* RESULT */}
       {result && (
-        <div className="max-w-6xl mx-auto mt-10 bg-[#1a1a1a] p-6 rounded-2xl">
-          <h2 className="text-xl mb-4">Generated Letter</h2>
-          <pre className="whitespace-pre-wrap">{result}</pre>
-        </div>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="max-w-4xl mx-auto mt-10 bg-[#1a1a1a] p-4 md:p-6 rounded-2xl shadow-xl"
+        >
+          <h2 className="text-lg md:text-xl mb-4 font-semibold">
+            Generated Letter
+          </h2>
+
+          <div className="bg-[#111] p-4 rounded-lg text-sm md:text-base whitespace-pre-wrap border border-gray-700">
+            {result}
+          </div>
+        </motion.div>
       )}
     </div>
   );
 }
 
+/* INPUT */
 function Input({ label, value, setValue }) {
   return (
     <input
       placeholder={label}
-      className="w-full mt-4 p-3 bg-[#111] rounded-lg"
+      className="w-full mt-4 p-3 bg-[#111] rounded-lg text-sm md:text-base border border-gray-700 focus:ring-2 focus:ring-purple-500"
       value={value}
       onChange={(e) => setValue(e.target.value)}
     />

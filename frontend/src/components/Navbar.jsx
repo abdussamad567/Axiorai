@@ -22,12 +22,10 @@ export default function Navbar() {
 
   // ✅ Auth state
   useEffect(() => {
-    // get current user
     supabase.auth.getUser().then(({ data }) => {
       setUser(data.user);
     });
 
-    // listen for auth changes
     const { data: listener } = supabase.auth.onAuthStateChange(
       (_event, session) => {
         setUser(session?.user || null);
@@ -80,24 +78,22 @@ export default function Navbar() {
           ))}
         </div>
 
-        {/* 🔥 AUTH SECTION */}
+        {/* AUTH SECTION */}
         <div className="hidden md:flex gap-3 items-center">
           {user ? (
             <>
-              {/* USER EMAIL */}
               <div className="flex items-center gap-2 text-sm text-gray-700">
                 <User size={16} />
                 {user.email}
               </div>
 
-              {/* ACCOUNT BUTTON */}
               <button
                 onClick={() => navigate("/account")}
-className="px-4 py-2 rounded-full bg-green-500 text-white text-sm hover:bg-green-700 transition"              >
+                className="px-4 py-2 rounded-full bg-green-500 text-white text-sm hover:bg-green-700 transition"
+              >
                 My Account
               </button>
 
-              {/* LOGOUT */}
               <button
                 onClick={handleLogout}
                 className="px-4 py-2 rounded-full bg-black text-white text-sm"
@@ -124,12 +120,16 @@ className="px-4 py-2 rounded-full bg-green-500 text-white text-sm hover:bg-green
           )}
         </div>
 
-        {/* MOBILE MENU BUTTON */}
+        {/* ✅ FIXED MOBILE MENU BUTTON */}
         <button
-          className="md:hidden"
+          className="md:hidden p-2 rounded-lg bg-white/70 backdrop-blur text-black"
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
         >
-          {isMobileMenuOpen ? <X /> : <Menu />}
+          {isMobileMenuOpen ? (
+            <X className="w-5 h-5 text-black" />
+          ) : (
+            <Menu className="w-5 h-5 text-black" />
+          )}
         </button>
       </div>
 
@@ -147,6 +147,7 @@ className="px-4 py-2 rounded-full bg-green-500 text-white text-sm hover:bg-green
                 <p className="text-gray-700">{user.email}</p>
 
                 <button
+                  className="text-left text-black"
                   onClick={() => {
                     navigate("/account");
                     setIsMobileMenuOpen(false);
@@ -155,12 +156,26 @@ className="px-4 py-2 rounded-full bg-green-500 text-white text-sm hover:bg-green
                   My Account
                 </button>
 
-                <button onClick={handleLogout}>Logout</button>
+                <button
+                  className="text-left text-red-500"
+                  onClick={handleLogout}
+                >
+                  Logout
+                </button>
               </>
             ) : (
               <>
-                <button onClick={() => navigate("/login")}>Sign In</button>
-                <button onClick={() => navigate("/signup")}>
+                <button
+                  className="text-left text-black"
+                  onClick={() => navigate("/login")}
+                >
+                  Sign In
+                </button>
+
+                <button
+                  className="text-left text-purple-600 font-semibold"
+                  onClick={() => navigate("/signup")}
+                >
                   Get Started
                 </button>
               </>

@@ -13,7 +13,6 @@ export default function WebsiteBuilder() {
       return;
     }
 
-    // ✅ CHECK LIMIT
     const canUse = await checkUsageLimit();
     if (!canUse) {
       alert("Free limit reached. Upgrade 🚀");
@@ -34,9 +33,7 @@ export default function WebsiteBuilder() {
       const data = await response.json();
       setHtml(data.result);
 
-      // ✅ TRACK
       await logActivity("Generated Website");
-
     } catch (error) {
       console.error(error);
       alert("Something went wrong.");
@@ -46,42 +43,70 @@ export default function WebsiteBuilder() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f3f4f6] p-6">
-      <div className="max-w-7xl mx-auto bg-white rounded-[40px] shadow-lg p-6">
+    <div className="min-h-screen bg-[#f3f4f6] px-4 py-6">
 
-        <h2 className="text-2xl font-semibold mb-6">
-          Website Builder
-        </h2>
+      {/* CONTAINER */}
+      <div className="max-w-7xl mx-auto bg-white rounded-3xl shadow-lg p-4 md:p-6">
 
-        <div className="grid grid-cols-2 gap-6">
+        {/* HEADER */}
+        <div className="mb-6">
+          <h2 className="text-xl md:text-2xl font-semibold">
+            Website Builder
+          </h2>
+          <p className="text-gray-500 text-sm">
+            Describe your website and generate instantly 🚀
+          </p>
+        </div>
 
-          <div>
+        {/* GRID */}
+        <div className="flex flex-col md:flex-row gap-6">
+
+          {/* LEFT - INPUT */}
+          <div className="w-full md:w-1/2 flex flex-col">
+
             <textarea
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
-              className="w-full h-60 p-4 border rounded-xl"
+              placeholder="Describe your website... e.g. Portfolio for a developer"
+              className="w-full min-h-[180px] md:h-60 p-4 border rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500"
             />
 
             <button
               onClick={handleGenerate}
               disabled={loading}
-              className="mt-4 bg-purple-600 text-white px-6 py-2 rounded-xl"
+              className="mt-4 bg-purple-600 text-white px-6 py-3 rounded-xl hover:bg-purple-700 transition"
             >
-              {loading ? "Generating..." : "Generate"}
+              {loading ? "Generating..." : "Generate Website"}
             </button>
+
           </div>
 
-          <div className="border rounded-xl overflow-hidden bg-white">
-            {html ? (
-              <iframe
-                srcDoc={html}
-                className="w-full h-[500px]"
-              />
-            ) : (
-              <div className="flex items-center justify-center h-[500px] text-gray-400">
-                Preview here...
+          {/* RIGHT - PREVIEW */}
+          <div className="w-full md:w-1/2">
+
+            <div className="border rounded-xl overflow-hidden bg-white shadow-sm">
+
+              {/* BROWSER BAR */}
+              <div className="bg-gray-100 p-2 flex gap-2">
+                <div className="w-3 h-3 bg-red-400 rounded-full" />
+                <div className="w-3 h-3 bg-yellow-400 rounded-full" />
+                <div className="w-3 h-3 bg-green-400 rounded-full" />
               </div>
-            )}
+
+              {/* CONTENT */}
+              {html ? (
+                <iframe
+                  srcDoc={html}
+                  className="w-full h-[300px] md:h-[500px]"
+                  sandbox="allow-same-origin"
+                />
+              ) : (
+                <div className="flex items-center justify-center h-[300px] md:h-[500px] text-gray-400">
+                  Preview will appear here...
+                </div>
+              )}
+            </div>
+
           </div>
 
         </div>

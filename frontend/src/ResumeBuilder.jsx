@@ -2,8 +2,6 @@ import { useState, useRef } from "react";
 import html2pdf from "html2pdf.js";
 import { logActivity } from "./utils/activity";
 
-await logActivity("Created Resume");
-
 export default function ResumeBuilder() {
   const [form, setForm] = useState({});
   const [resume, setResume] = useState("");
@@ -30,6 +28,9 @@ export default function ResumeBuilder() {
 
       const data = await res.json();
       setResume(data.resume);
+
+      await logActivity("Created Resume"); // ✅ FIXED
+
     } catch {
       setResume("❌ Error generating resume");
     }
@@ -37,151 +38,99 @@ export default function ResumeBuilder() {
     setLoading(false);
   };
 
-  // Copy Resume
   const copyResume = () => {
     if (!resume) return;
     const temp = document.createElement("div");
     temp.innerHTML = resume;
     navigator.clipboard.writeText(temp.innerText);
-    alert("Copied to clipboard ✅");
+    alert("Copied ✅");
   };
 
-  // Download PDF
   const downloadPDF = () => {
-  if (!resumeRef.current) return;
+    if (!resumeRef.current) return;
 
-  html2pdf()
-    .set({
-      margin: 10,
-      filename: "resume.pdf",
-      image: { type: "jpeg", quality: 0.98 },
-      html2canvas: {
-        scale: 2, // better quality
-        useCORS: true,
-      },
-      jsPDF: {
-        unit: "mm",
-        format: "a4",
-        orientation: "portrait",
-      },
-    })
-    .from(resumeRef.current)
-    .save();
-};
+    html2pdf()
+      .set({
+        margin: 10,
+        filename: "resume.pdf",
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: "mm", format: "a4" },
+      })
+      .from(resumeRef.current)
+      .save();
+  };
 
   return (
-  <div className="min-h-screen bg-[#f3f4f6] text-black p-6 relative">
+    <div className="min-h-screen bg-[#f3f4f6] px-4 md:px-6 py-6">
 
-    {/* BIG WHITE CONTAINER */}
-    <div className="absolute inset-6 bg-white rounded-[40px] shadow-lg"></div>
-
-    <div className="relative">
-      <h1 className="text-4xl font-semibold text-center mb-10">
+      {/* HEADER */}
+      <h1 className="text-2xl md:text-4xl font-semibold text-center mb-8">
         AI Resume Builder 🚀
       </h1>
 
-      <div className="grid lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
+      <div className="max-w-6xl mx-auto flex flex-col md:grid md:grid-cols-2 gap-6">
 
         {/* LEFT FORM */}
-        <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm space-y-4">
+        <div className="bg-white p-4 md:p-6 rounded-2xl shadow space-y-4">
 
           {[
-            { id: "name", placeholder: "Full Name" },
-            { id: "email", placeholder: "Email" },
-            { id: "phone", placeholder: "Phone" },
-            { id: "location", placeholder: "Location" },
-            { id: "role", placeholder: "Role" },
-            { id: "experience", placeholder: "Experience (years)" },
-          ].map((field) => (
+            "name","email","phone","location","role","experience"
+          ].map((id) => (
             <input
-              key={field.id}
-              id={field.id}
-              placeholder={field.placeholder}
+              key={id}
+              id={id}
+              placeholder={id}
               onChange={handleChange}
-              className="w-full p-3 rounded-lg bg-gray-100 border border-gray-200 focus:ring-2 focus:ring-purple-400 outline-none"
+              className="w-full p-3 rounded-lg bg-gray-100 border"
             />
           ))}
 
-          <textarea
-            id="skills"
-            placeholder="Skills"
-            onChange={handleChange}
-            className="w-full p-3 rounded-lg bg-gray-100 border border-gray-200 focus:ring-2 focus:ring-purple-400 outline-none"
-          />
-
-          <textarea
-            id="education"
-            placeholder="Education"
-            onChange={handleChange}
-            className="w-full p-3 rounded-lg bg-gray-100 border border-gray-200 focus:ring-2 focus:ring-purple-400 outline-none"
-          />
-
-          <textarea
-            id="projects"
-            placeholder="Projects"
-            onChange={handleChange}
-            className="w-full p-3 rounded-lg bg-gray-100 border border-gray-200 focus:ring-2 focus:ring-purple-400 outline-none"
-          />
+          <textarea id="skills" placeholder="Skills" onChange={handleChange} className="w-full p-3 bg-gray-100 rounded-lg border" />
+          <textarea id="education" placeholder="Education" onChange={handleChange} className="w-full p-3 bg-gray-100 rounded-lg border" />
+          <textarea id="projects" placeholder="Projects" onChange={handleChange} className="w-full p-3 bg-gray-100 rounded-lg border" />
 
           <button
             onClick={generateResume}
-            className="w-full py-3 rounded-full bg-gradient-to-r from-purple-500 to-indigo-500 text-white hover:scale-105 transition"
+            className="w-full py-3 rounded-xl bg-purple-600 text-white"
           >
             {loading ? "Generating..." : "Generate Resume"}
           </button>
         </div>
 
         {/* RIGHT PREVIEW */}
-        <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm overflow-auto">
+        <div className="bg-white p-4 md:p-6 rounded-2xl shadow">
 
-          <h2 className="text-xl font-semibold mb-4">Preview</h2>
+          <h2 className="text-lg font-semibold mb-3">Preview</h2>
 
-          {/* ACTION BUTTONS */}
           {resume && (
-            <div className="flex gap-3 mb-4">
-              <button
-                onClick={copyResume}
-                className="px-4 py-2 rounded-full border border-gray-300 text-sm hover:bg-gray-100"
-              >
+            <div className="flex flex-wrap gap-2 mb-4">
+              <button onClick={copyResume} className="px-3 py-2 border rounded-lg text-sm">
                 Copy
               </button>
 
-              <button
-                onClick={downloadPDF}
-                className="px-4 py-2 rounded-full bg-black text-white text-sm"
-              >
-                Download PDF
+              <button onClick={downloadPDF} className="px-3 py-2 bg-black text-white rounded-lg text-sm">
+                Download
               </button>
             </div>
           )}
 
           {!resume && !loading && (
-            <p className="text-gray-500">
-              Your resume will appear here...
-            </p>
+            <p className="text-gray-400">Preview will appear here</p>
           )}
 
-          {loading && (
-            <p className="text-purple-500">
-              Generating resume... ⏳
-            </p>
-          )}
+          {loading && <p className="text-purple-500">Generating...</p>}
 
-          {/* PREVIEW */}
           {resume && (
             <div
               ref={resumeRef}
-              className="bg-white text-black p-10 rounded shadow max-w-2xl mx-auto"
+              className="bg-white text-black p-6 rounded shadow text-sm max-h-[500px] overflow-auto"
             >
-              <div
-                dangerouslySetInnerHTML={{ __html: resume }}
-              />
+              <div dangerouslySetInnerHTML={{ __html: resume }} />
             </div>
           )}
         </div>
 
       </div>
     </div>
-  </div>
-);
+  );
 }

@@ -34,12 +34,24 @@ const footerLinks = {
 };
 
 const socialLinks = [
-  { icon: Twitter, href: "#" },
-  { icon: Linkedin, href: "#" },
-  { icon: Github, href: "#" },
-  { icon: Mail, href: "#" },
+  {
+    icon: Twitter, // still use icon
+    href: "https://x.com/AiAxior60779",
+    label: "X",
+  },
+  {
+    icon: Linkedin,
+    href: "#",
+  },
+  {
+    icon: Github,
+    href: "#",
+  },
+  {
+    icon: Mail,
+    href: "mailto:axioraiapp@gmail.com", // ✅ EMAIL FIX
+  },
 ];
-
 export default function Footer() {
   return (
     <footer className="bg-[#f3f4f6] text-black relative">

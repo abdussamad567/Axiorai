@@ -39,31 +39,169 @@ app.post("/generate-resume", async (req, res) => {
     const response = await client.chat.completions.create({
       model: "openai/gpt-4o-mini",
       messages: [
-        {
-          role: "user",
-          content: `
-Create a PROFESSIONAL resume in HTML using ONLY the user data provided.
+       {
+  role: "user",
+  content: `
+You are an expert resume writer, ATS optimization specialist, and LaTeX engineer.
 
-STRICT RULES:
-- DO NOT use fake names
-- DO NOT invent data
-- ONLY use provided details
-- Skip empty fields
+Your task is to generate a highly professional, ATS-friendly resume in LaTeX that compiles perfectly on Overleaf.
 
-Name: ${name}
-Email: ${email}
-Phone: ${phone}
-Location: ${location}
-Role: ${role}
-Experience: ${experience}
-Skills: ${skills}
-Education: ${education}
-Projects: ${projects}
+========================
+PRIMARY GOAL
+========================
 
-IMPORTANT:
-- Do NOT include html/body tags
-          `,
-        },
+Create a clean, structured, ATS-optimized resume that:
+- Passes ATS parsing systems
+- Looks professional and minimal
+- Uses strong section hierarchy
+- Maintains perfect alignment and spacing
+
+========================
+STRICT RULES (CRITICAL)
+========================
+
+- DO NOT invent or assume any data
+- DO NOT add fake experience or skills
+- ONLY use the provided data
+- If any section is empty → SKIP it completely
+- Keep formatting simple (ATS-friendly)
+- Avoid fancy or complex LaTeX tricks
+- Ensure output compiles without errors
+
+========================
+ATS OPTIMIZATION RULES
+========================
+
+- Use clear section headings (no icons, no graphics)
+- Use standard keywords (Education, Experience, Skills, Projects)
+- Avoid tables for layout
+- Use bullet points for experience/projects
+- Keep consistent formatting across sections
+- Use readable fonts and spacing
+- Ensure proper alignment (no broken structure)
+
+========================
+LATEX STRUCTURE (FOLLOW STRICTLY)
+========================
+
+- documentclass: article (10pt)
+- margins: 0.75in
+- packages:
+  geometry
+  titlesec
+  hyperref
+  enumitem
+  parskip
+
+- Section titles:
+  - Bold
+  - Horizontal rule below
+
+- Bullet points:
+  - Compact (no extra spacing)
+
+========================
+HEADER FORMAT
+========================
+
+Centered layout:
+
+NAME (LARGE, BOLD)
+Role / Title
+Phone | Email | Location
+Optional Links (LinkedIn, GitHub, Portfolio)
+
+========================
+SECTION ORDER (IMPORTANT)
+========================
+
+1. Education
+2. Experience (if exists)
+3. Projects
+4. Skills
+5. Additional / Links (if exists)
+
+========================
+SECTION FORMATTING RULES
+========================
+
+EDUCATION:
+- University name (bold)
+- Degree + field
+- Year range
+- Optional GPA
+
+EXPERIENCE:
+- Company name (bold)
+- Role
+- Duration
+- Bullet points (impact-focused, action verbs)
+
+PROJECTS:
+- Project title (bold)
+- GitHub/Live link using \\href{}
+- Bullet points explaining:
+  - what you built
+  - technologies used
+  - impact/features
+
+SKILLS:
+Group clearly:
+- Programming Languages
+- Frontend
+- Backend
+- Database
+- Tools
+
+========================
+BULLET POINT QUALITY (VERY IMPORTANT)
+========================
+
+Each bullet must:
+- Start with action verb (Developed, Built, Implemented, Designed)
+- Be concise (1–2 lines max)
+- Be meaningful (no fluff)
+
+========================
+USER DATA
+========================
+
+Name: \${name}
+Email: \${email}
+Phone: \${phone}
+Location: \${location}
+Role: \${role}
+Experience: \${experience}
+Skills: \${skills}
+Education: \${education}
+Projects: \${projects}
+Links: \${links}
+
+========================
+FINAL POLISH PASS
+========================
+
+Before finishing:
+- Fix alignment issues
+- Ensure consistent spacing
+- Ensure section clarity
+- Ensure ATS readability
+
+========================
+OUTPUT RULES (STRICT)
+========================
+
+- Return ONLY LaTeX code
+- Include full document:
+  \\documentclass → \\end{document}
+- No explanations
+- No markdown
+- No \`\`\`
+- Must compile without errors in Overleaf
+
+The final output should look like a clean, professional, ATS-optimized resume used by top candidates.
+`
+}
       ],
     });
 
@@ -84,10 +222,106 @@ app.post("/generate-website", async (req, res) => {
     const response = await client.chat.completions.create({
       model: "gpt-4o-mini",
       messages: [
-        {
-          role: "user",
-          content: `Generate a simple modern website HTML for: ${prompt}`,
-        },
+       {
+  role: "user",
+  content: `
+You are a world-class frontend engineer, UI/UX designer, and creative director.
+
+Your task is to generate a visually stunning, professional, and modern website.
+
+========================
+USER REQUEST
+========================
+${prompt}
+
+========================
+GOAL
+========================
+Create a premium-quality website that looks like it was built by a top designer.
+
+This must NOT look like a basic template.
+
+========================
+DESIGN STYLE (STRICT)
+========================
+
+- Modern, minimal, and premium
+- Dark or light theme based on context
+- Use gradients, soft shadows, and spacing
+- Inspired by high-end websites (like SaaS landing pages)
+- Clean layout with strong visual hierarchy
+
+========================
+LAYOUT RULES
+========================
+
+- Avoid basic stacked layout
+- Use sections with variation (grid, split, cards)
+- Maintain max-width (~1100px)
+- Proper spacing and alignment
+- Make hero section visually strong
+
+========================
+UI/UX REQUIREMENTS
+========================
+
+- Sticky navbar with smooth scrolling
+- Hero section with heading + subheading + CTA
+- Multiple sections depending on context
+- Card-based layouts where appropriate
+- Clean footer
+
+========================
+INTERACTIONS
+========================
+
+- Smooth hover effects
+- Button animations
+- Subtle transitions (0.3s ease)
+- Scroll behavior smooth
+
+========================
+TYPOGRAPHY
+========================
+
+- Modern font stack (Inter, system-ui)
+- Clear hierarchy (large headings, muted text)
+
+========================
+TECH REQUIREMENTS
+========================
+
+- ONLY HTML, CSS, and vanilla JavaScript
+- No frameworks
+- Fully responsive
+- Use Flexbox and Grid
+
+========================
+ANTI-GENERIC RULE
+========================
+
+- Do NOT generate boring or template-like design
+- Make layout visually appealing and unique
+
+========================
+FINAL POLISH
+========================
+
+Improve spacing, alignment, and overall aesthetics before finishing.
+
+========================
+OUTPUT RULES
+========================
+
+- Return ONLY a complete HTML file
+- Include <html>, <head>, <body>
+- Include ALL CSS inside <style>
+- Include ALL JS inside <script>
+- NO explanations
+- NO markdown
+- NO \`\`\`
+`
+}
       ],
     });
 
@@ -108,104 +342,195 @@ app.post("/generate-website", async (req, res) => {
 
 // ================= 🔥 PORTFOLIO BUILDER (MAIN FEATURE) =================
 app.post("/generate-portfolio", async (req, res) => {
-  const { name, role, bio } = req.body;
+  const { name, role, bio, projects, skills } = req.body;
 
   try {
     const response = await client.chat.completions.create({
-      model: "anthropic/claude-3.5-sonnet", // 🔥 BEST FOR UI
+     model: "openai/gpt-4o-mini",
       messages: [
-        {
-          role: "user",
-          content: `
-You are a senior frontend engineer and award-winning UI/UX designer.
+       
+    {
+  role: "user",
+  content: `
+You are a world-class frontend engineer, UI/UX designer, and creative director.
 
-Your task is to build a production-ready, highly polished personal portfolio website.
+Your task is to build a stunning, production-ready personal portfolio website that looks like a premium SaaS landing page — something that would impress recruiters, clients, and designers instantly.
 
 ========================
-USER DETAILS
+USER DATA
 ========================
 Name: ${name}
 Role: ${role}
 Bio: ${bio}
 
-========================
-REQUIREMENTS
-========================
+Projects:
+${projects} 
+// Each project may include: title, description, image(optional), live link, github link
 
-Create a COMPLETE, PROFESSIONAL portfolio website with:
-
-1. Sticky Navbar
-   - Logo (name)
-   - Smooth scroll navigation
-   - Active link highlight
-
-2. Hero Section
-   - Big bold heading (name)
-   - Role subtitle
-   - Short intro
-   - Call-to-action buttons (Hire Me / View Projects)
-   - Background gradient or subtle animation
-
-3. About Section
-   - Clean layout
-   - Bio formatted professionally
-
-4. Skills Section
-   - Display skills as badges OR progress bars
-   - Modern UI
-
-5. Projects Section
-   - Card-based layout
-   - Each project with:
-     - Title
-     - Description
-     - Hover effects
-     - Buttons (Live / GitHub)
-
-6. Contact Section
-   - Styled contact form (name, email, message)
-   - Clean inputs with focus states
-
-7. Footer
-   - Social links
-   - Copyright
+Skills:
+${skills}
 
 ========================
-DESIGN SYSTEM
+GOAL
+========================
+Create a visually impressive, modern, and highly polished portfolio website.
+
+This should NOT look like a basic template.
+It must feel like a premium product built by a top-tier designer.
+
+========================
+DESIGN DIRECTION (STRICT)
 ========================
 
-- Use modern design trends (like Framer / Webflow / Stripe)
-- Use gradients, shadows, spacing
-- Smooth hover animations
-- Rounded corners
-- Clean typography
-- Proper section spacing
+- Style: Futuristic + Minimal + Glassmorphism
+- Theme: Dark mode with vibrant gradients (purple, blue, neon accents)
+- Inspired by: Stripe, Vercel, Linear, Framer
+- Use soft glow effects, gradients, and blurred backgrounds
+- Use depth (shadows, layers)
+- Smooth animations everywhere
+
+========================
+LAYOUT RULES (VERY IMPORTANT)
+========================
+
+- Avoid generic stacked sections
+- Use alternating layouts (left/right split)
+- Use asymmetrical compositions
+- Use proper max-width container (1100px–1200px)
+- Add whitespace for premium feel
+- Make hero section visually dominant
+
+========================
+SECTIONS TO BUILD
+========================
+
+1. NAVBAR
+- Sticky, transparent initially
+- Blur + dark background on scroll
+- Active link highlight
+- Smooth scrolling
+
+2. HERO SECTION
+- Large bold name
+- Role subtitle with gradient text
+- Short intro
+- CTA buttons (Hire Me, View Work)
+- Animated gradient background OR subtle glow effect
+
+3. ABOUT SECTION
+- Clean split layout
+- Professional formatted bio
+- Optional highlight cards (experience, passion)
+
+4. SKILLS SECTION
+- Show skills as:
+  - modern badges OR
+  - animated progress bars
+- Add hover effects
+
+5. PROJECTS SECTION (IMPORTANT)
+
+- Card-based modern layout
+- Each project must include:
+  - Image (if provided, display it properly)
+  - Title
+  - Description
+  - Buttons (Live Demo, GitHub)
+- If image exists:
+  - Show image with cover fit
+  - Add hover zoom effect
+- If NO image:
+  - Show gradient placeholder with icon
+- Add hover lift + glow effect
+
+6. CONTACT SECTION
+- Beautiful styled form
+- Inputs with glow focus states
+- Button with gradient hover animation
+
+7. FOOTER
+- Social links
+- Minimal clean design
+
+========================
+INTERACTIONS & ANIMATIONS
+========================
+
+- Smooth scrolling
+- Hover lift effect on cards
+- Button hover glow
+- Subtle fade-in animations on scroll
+- Navbar background transition on scroll
+- Use transition timing (0.3s–0.5s ease)
+
+========================
+TYPOGRAPHY
+========================
+
+- Use modern font stack (Inter, system-ui)
+- Strong hierarchy:
+  - Hero title: very large & bold
+  - Section titles: bold
+  - Body text: muted color (#aaa)
+- Use letter-spacing for premium feel
 
 ========================
 TECH REQUIREMENTS
 ========================
 
-- Use ONLY HTML, CSS, and minimal vanilla JS
-- Use Flexbox and Grid
+- ONLY HTML, CSS, and vanilla JavaScript
+- No frameworks
+- Use Flexbox + Grid
 - Fully responsive (mobile-first)
-- Smooth scrolling enabled
-- Include subtle animations (hover, transitions)
+- Clean, well-structured code
 
 ========================
-OUTPUT RULES (VERY IMPORTANT)
+IMAGE HANDLING (IMPORTANT)
+========================
+
+- Dynamically render project images from provided data
+- Use <img> tags properly
+- Ensure:
+  - object-fit: cover
+  - consistent card sizes
+- Add fallback UI if image is missing
+
+========================
+ANTI-GENERIC RULE
+========================
+
+- DO NOT create a basic template
+- DO NOT use boring layouts
+- Make it feel like a premium designer portfolio
+- Add small delightful UI details
+
+========================
+FINAL POLISH PASS
+========================
+
+After generating, improve:
+- spacing
+- alignment
+- color balance
+- visual hierarchy
+
+Make it visually stunning and professional.
+
+========================
+OUTPUT RULES (STRICT)
 ========================
 
 - Return ONLY a complete HTML file
 - Include <html>, <head>, <body>
 - Include ALL CSS inside <style>
-- Do NOT include explanations
-- Do NOT use markdown
-- Do NOT include \`\`\`
+- Include ALL JS inside <script>
+- NO explanations
+- NO markdown
+- NO \`\`\`
 
-Make the website look like it was built by a professional developer.
-Use a dark + gradient modern theme similar to high-end developer portfolios.
+          The final result should feel like a top-tier developer portfolio that people would genuinely love.
 `
-        },
+        }
       ],
     });
 
