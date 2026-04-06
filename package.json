@@ -1,0 +1,25 @@
+{
+  "name": "axiorai",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently \"npm run dev --prefix backend\" \"npm run dev --prefix frontend\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/abdussamad567/Axiorai.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/abdussamad567/Axiorai/issues"
+  },
+  "homepage": "https://github.com/abdussamad567/Axiorai#readme",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.101.1",
+    "concurrently": "^9.2.1"
+  }
+}

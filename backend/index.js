@@ -37,183 +37,163 @@ app.post("/generate-resume", async (req, res) => {
 
   try {
     const response = await client.chat.completions.create({
-      model: "openai/gpt-4o-mini",
+      model: "gpt-4o-mini",
+
+      // ✅ FORCE JSON OUTPUT
+      response_format: { type: "json_object" },
+
       messages: [
-       {
-  role: "user",
-  content: `
-You are an expert resume writer, ATS optimization specialist, and LaTeX engineer.
+        {
+          role: "system",
+          content: `
+You are a professional resume writer.
 
-Your task is to generate a highly professional, ATS-friendly resume in LaTeX that compiles perfectly on Overleaf.
+Create a strong, detailed software engineer resume.
 
-========================
-PRIMARY GOAL
-========================
+RULES:
+- Fill ALL sections with realistic content
+- Experience must include bullet points with impact
+- Projects must include description + technologies
+- Skills must be relevant and modern
+- Do NOT leave anything empty
 
-Create a clean, structured, ATS-optimized resume that:
-- Passes ATS parsing systems
-- Looks professional and minimal
-- Uses strong section hierarchy
-- Maintains perfect alignment and spacing
-
-========================
-STRICT RULES (CRITICAL)
-========================
-
-- DO NOT invent or assume any data
-- DO NOT add fake experience or skills
-- ONLY use the provided data
-- If any section is empty → SKIP it completely
-- Keep formatting simple (ATS-friendly)
-- Avoid fancy or complex LaTeX tricks
-- Ensure output compiles without errors
-
-========================
-ATS OPTIMIZATION RULES
-========================
-
-- Use clear section headings (no icons, no graphics)
-- Use standard keywords (Education, Experience, Skills, Projects)
-- Avoid tables for layout
-- Use bullet points for experience/projects
-- Keep consistent formatting across sections
-- Use readable fonts and spacing
-- Ensure proper alignment (no broken structure)
-
-========================
-LATEX STRUCTURE (FOLLOW STRICTLY)
-========================
-
-- documentclass: article (10pt)
-- margins: 0.75in
-- packages:
-  geometry
-  titlesec
-  hyperref
-  enumitem
-  parskip
-
-- Section titles:
-  - Bold
-  - Horizontal rule below
-
-- Bullet points:
-  - Compact (no extra spacing)
-
-========================
-HEADER FORMAT
-========================
-
-Centered layout:
-
-NAME (LARGE, BOLD)
-Role / Title
-Phone | Email | Location
-Optional Links (LinkedIn, GitHub, Portfolio)
-
-========================
-SECTION ORDER (IMPORTANT)
-========================
-
-1. Education
-2. Experience (if exists)
-3. Projects
-4. Skills
-5. Additional / Links (if exists)
-
-========================
-SECTION FORMATTING RULES
-========================
-
-EDUCATION:
-- University name (bold)
-- Degree + field
-- Year range
-- Optional GPA
-
-EXPERIENCE:
-- Company name (bold)
-- Role
-- Duration
-- Bullet points (impact-focused, action verbs)
-
-PROJECTS:
-- Project title (bold)
-- GitHub/Live link using \\href{}
-- Bullet points explaining:
-  - what you built
-  - technologies used
-  - impact/features
-
-SKILLS:
-Group clearly:
-- Programming Languages
-- Frontend
-- Backend
-- Database
-- Tools
-
-========================
-BULLET POINT QUALITY (VERY IMPORTANT)
-========================
-
-Each bullet must:
-- Start with action verb (Developed, Built, Implemented, Designed)
-- Be concise (1–2 lines max)
-- Be meaningful (no fluff)
-
-========================
-USER DATA
-========================
-
-Name: \${name}
-Email: \${email}
-Phone: \${phone}
-Location: \${location}
-Role: \${role}
-Experience: \${experience}
-Skills: \${skills}
-Education: \${education}
-Projects: \${projects}
-Links: \${links}
-
-========================
-FINAL POLISH PASS
-========================
-
-Before finishing:
-- Fix alignment issues
-- Ensure consistent spacing
-- Ensure section clarity
-- Ensure ATS readability
-
-========================
-OUTPUT RULES (STRICT)
-========================
-
-- Return ONLY LaTeX code
-- Include full document:
-  \\documentclass → \\end{document}
-- No explanations
-- No markdown
-- No \`\`\`
-- Must compile without errors in Overleaf
-
-The final output should look like a clean, professional, ATS-optimized resume used by top candidates.
-`
+Return ONLY JSON in this format:
+{
+  "name": "",
+  "role": "",
+  "summary": "",
+  "experience": [
+    {
+      "title": "",
+      "company": "",
+      "duration": "",
+      "points": ["", "", ""]
+    }
+  ],
+  "skills": ["", "", ""],
+  "education": [
+    {
+      "degree": "",
+      "institution": "",
+      "year": ""
+    }
+  ],
+  "projects": [
+    {
+      "name": "",
+      "description": "",
+      "tech": ["", ""]
+    }
+  ]
 }
+`,
+        },
+        {
+          role: "user",
+          content: JSON.stringify({
+            name,
+            role,
+            experience,
+            skills,
+            education,
+            projects,
+          }),
+        },
       ],
     });
 
-    res.json({
-      resume: response.choices[0].message.content,
-    });
+    // ✅ DEBUG (IMPORTANT)
+    console.log("AI RAW:", response.choices[0].message.content);
+
+    let parsed;
+
+    try {
+      parsed = JSON.parse(response.choices[0].message.content);
+    } catch (err) {
+      console.error("❌ JSON parse failed:", err);
+      parsed = {};
+    }
+
+    // ✅ PROFESSIONAL HTML TEMPLATE
+    const html = `
+    <div style="font-family: 'Segoe UI', sans-serif; max-width: 900px; margin:auto; padding:30px; color:#333; line-height:1.6;">
+
+      <h1 style="margin-bottom:5px;">${name || "Your Name"}</h1>
+      <p style="margin-top:0; font-size:14px; color:gray;">
+        ${email || ""} | ${phone || ""} | ${location || ""}
+      </p>
+
+      <h2 style="color:#2c3e50;">${parsed.role || role || ""}</h2>
+
+      <hr/>
+
+      <h3>Professional Summary</h3>
+      <p>${parsed.summary || "Passionate software engineer with strong development skills."}</p>
+
+      <h3>Experience</h3>
+      ${
+        parsed.experience?.length
+          ? parsed.experience
+              .map(
+                (exp) => `
+          <div style="margin-bottom:15px;">
+            <strong>${exp.title}</strong> - ${exp.company}
+            <span style="float:right; color:gray;">${exp.duration}</span>
+            <ul>
+              ${(exp.points || []).map((p) => `<li>${p}</li>`).join("")}
+            </ul>
+          </div>
+        `
+              )
+              .join("")
+          : "<p>No experience provided</p>"
+      }
+
+      <h3>Skills</h3>
+      <p>${(parsed.skills || []).join(", ") || "Not specified"}</p>
+
+      <h3>Projects</h3>
+      ${
+        parsed.projects?.length
+          ? parsed.projects
+              .map(
+                (proj) => `
+          <div style="margin-bottom:10px;">
+            <strong>${proj.name}</strong>
+            <p>${proj.description}</p>
+            <small><b>Tech:</b> ${(proj.tech || []).join(", ")}</small>
+          </div>
+        `
+              )
+              .join("")
+          : "<p>No projects listed</p>"
+      }
+
+      <h3>Education</h3>
+      ${
+        parsed.education?.length
+          ? parsed.education
+              .map(
+                (edu) => `
+          <p>
+            <strong>${edu.degree}</strong> - ${edu.institution} (${edu.year})
+          </p>
+        `
+              )
+              .join("")
+          : "<p>No education provided</p>"
+      }
+
+    </div>
+    `;
+
+    return res.json({ resume: html });
+
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error("❌ Resume generation error:", error);
+    return res.status(500).json({ error: "Server error" });
   }
 });
-
-
 // ================= WEBSITE BUILDER =================
 app.post("/generate-website", async (req, res) => {
   const { prompt } = req.body;

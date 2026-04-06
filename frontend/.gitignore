@@ -23,3 +23,14 @@ dist-ssr
 *.sln
 *.sw?
 .env*
+# env files
+.env
+.env.*
+backend/.env
+frontend/.env
+
+# node
+node_modules/
+
+# logs
+npm-debug.log*
