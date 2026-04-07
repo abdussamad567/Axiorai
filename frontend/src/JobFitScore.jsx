@@ -20,27 +20,34 @@ export default function JobFitScore() {
 
     setLoading(true);
 
-    try {
-      const res = await fetch("http://localhost:3000/job-fit-score", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          jobDescription: jobDesc,
-          portfolio,
-          resumeText: resume?.name || "",
-        }),
-      });
+    const BASE_URL = "https://axiorai-backend.onrender.com";
 
-      const data = await res.json();
-      setResult(data);
+try {
+  const res = await fetch(`${BASE_URL}/job-fit-score`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      jobDescription: jobDesc,
+      portfolio,
+      resumeText: resume?.name || "",
+    }),
+  });
 
-      await logActivity("Checked Job Fit");
+  if (!res.ok) {
+    throw new Error("Failed to calculate job fit score");
+  }
 
-    } catch {
-      alert("Error");
-    } finally {
-      setLoading(false);
-    }
+  const data = await res.json();
+  setResult(data);
+
+  await logActivity("Checked Job Fit");
+
+} catch (err) {
+  console.error(err);
+  alert("Something went wrong ❌");
+} finally {
+  setLoading(false);
+}
   };
 
   return (

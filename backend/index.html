@@ -62,22 +62,25 @@
   <div id="resume"></div>
 
   <script>
-    async function generateResume() {
-      const data = {
-        name: document.getElementById("name").value,
-        email: document.getElementById("email").value,
-        phone: document.getElementById("phone").value,
-        location: document.getElementById("location").value,
-        role: document.getElementById("role").value,
-        experience: document.getElementById("experience").value,
-        skills: document.getElementById("skills").value,
-        education: document.getElementById("education").value,
-        projects: document.getElementById("projects").value,
-      };
+  const BASE_URL = "https://axiorai-backend.onrender.com";
 
-      document.getElementById("resume").innerHTML = "Generating... ⏳";
+  async function generateResume() {
+    const data = {
+      name: document.getElementById("name").value,
+      email: document.getElementById("email").value,
+      phone: document.getElementById("phone").value,
+      location: document.getElementById("location").value,
+      role: document.getElementById("role").value,
+      experience: document.getElementById("experience").value,
+      skills: document.getElementById("skills").value,
+      education: document.getElementById("education").value,
+      projects: document.getElementById("projects").value,
+    };
 
-      const response = await fetch("http://localhost:3000/generate-resume", {
+    document.getElementById("resume").innerHTML = "Generating... ⏳";
+
+    try {
+      const response = await fetch(`${BASE_URL}/generate-resume`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -88,8 +91,12 @@
       const result = await response.json();
 
       document.getElementById("resume").innerHTML = result.resume;
-    }
-  </script>
 
+    } catch (error) {
+      console.error(error);
+      document.getElementById("resume").innerHTML = "Error generating resume ❌";
+    }
+  }
+</script>
 </body>
 </html>

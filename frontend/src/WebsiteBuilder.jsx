@@ -19,27 +19,34 @@ export default function WebsiteBuilder() {
       return;
     }
 
-    try {
-      setLoading(true);
+   const BASE_URL = "https://axiorai-backend.onrender.com";
 
-      const response = await fetch("http://localhost:3000/generate-website", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ prompt }),
-      });
+try {
+  setLoading(true);
 
-      const data = await response.json();
-      setHtml(data.result);
+  const response = await fetch(`${BASE_URL}/generate-website`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ prompt }),
+  });
 
-      await logActivity("Generated Website");
-    } catch (error) {
-      console.error(error);
-      alert("Something went wrong.");
-    } finally {
-      setLoading(false);
-    }
+  if (!response.ok) {
+    throw new Error("Failed to generate website");
+  }
+
+  const data = await response.json();
+  setHtml(data.result);
+
+  await logActivity("Generated Website");
+
+} catch (err) {
+  console.error(err);
+  alert("Something went wrong ❌");
+} finally {
+  setLoading(false);
+}
   }
 
   return (

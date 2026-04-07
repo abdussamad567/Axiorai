@@ -20,27 +20,35 @@ export default function PortfolioCritic() {
       return;
     }
 
-    setLoading(true);
-    setResult(null);
+setLoading(true);
+setResult(null);
 
-    try {
-      const res = await fetch("http://localhost:3000/portfolio-critic", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ link }),
-      });
+const BASE_URL = "https://axiorai-backend.onrender.com";
 
-      const data = await res.json();
-      setResult(data);
+try {
+  const res = await fetch(`${BASE_URL}/portfolio-critic`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ link }),
+  });
 
-      await logActivity("Analyzed Portfolio");
-    } catch {
-      alert("Error analyzing portfolio");
-    } finally {
-      setLoading(false);
-    }
+  if (!res.ok) {
+    throw new Error("Failed to analyze portfolio");
+  }
+
+  const data = await res.json();
+  setResult(data);
+
+  await logActivity("Analyzed Portfolio");
+
+} catch (err) {
+  console.error(err);
+  alert("Something went wrong ❌");
+} finally {
+  setLoading(false);
+}
   };
 
   return (

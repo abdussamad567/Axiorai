@@ -40,26 +40,32 @@ export default function ResumeBuilder() {
       projects: cleanArray(form.projects),
     };
 
-    try {
-      const res = await fetch("http://localhost:3000/generate-resume", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formattedData),
-      });
+   const BASE_URL = "https://axiorai-backend.onrender.com";
 
-      const data = await res.json();
-      setResume(data.resume);
+try {
+  const res = await fetch(`${BASE_URL}/generate-resume`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(formattedData),
+  });
 
-      await logActivity("Created Resume"); // ✅ restored
+  if (!res.ok) {
+    throw new Error("Failed to generate resume");
+  }
 
-    } catch (err) {
-      console.error(err);
-      setResume("❌ Error generating resume");
-    }
+  const data = await res.json();
+  setResume(data.resume);
 
-    setLoading(false);
+  await logActivity("Created Resume");
+
+} catch (err) {
+  console.error(err);
+  alert("Something went wrong ❌");
+} finally {
+  setLoading(false);
+}
   };
 
   const copyResume = () => {

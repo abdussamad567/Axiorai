@@ -10,27 +10,37 @@ export default function GithubPortfolio() {
   const [readme, setReadme] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const fetchRepos = async () => {
-    const canUse = await checkUsageLimit();
-    if (!canUse) {
-      alert("Free limit reached 🚀");
-      return;
+const fetchRepos = async () => {
+  const canUse = await checkUsageLimit();
+  if (!canUse) {
+    alert("Free limit reached 🚀");
+    return;
+  }
+
+  setLoading(true);
+  const BASE_URL = "https://axiorai-backend.onrender.com";
+
+  try {
+    const res = await fetch(`${BASE_URL}/github-repos/${username}`);
+
+    if (!res.ok) {
+      throw new Error("Failed to fetch repos");
     }
 
-    setLoading(true);
-    try {
-      const res = await fetch(`http://localhost:3000/github-repos/${username}`);
-      const data = await res.json();
-      setRepos(data);
-      await logActivity("Synced GitHub Repos");
-    } catch {
-      alert("Error fetching repos");
-    } finally {
-      setLoading(false);
-    }
-  };
+    const data = await res.json();
+    setRepos(data);
 
-  const generateReadme = async (repo) => {
+    await logActivity("Synced GitHub Repos");
+
+  } catch (err) {
+    console.error(err);
+    alert("Error fetching repos ❌");
+  } finally {
+    setLoading(false);
+  }
+};
+
+const generateReadme = async (repo) => {
     const canUse = await checkUsageLimit();
     if (!canUse) {
       alert("Free limit reached 🚀");
@@ -41,7 +51,9 @@ export default function GithubPortfolio() {
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:3000/generate-readme", {
+      const BASE_URL = "https://axiorai-backend.onrender.com";
+
+      const res = await fetch(`${BASE_URL}/generate-readme`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

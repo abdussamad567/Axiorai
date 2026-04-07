@@ -35,22 +35,30 @@ export default function PortfolioBuilder() {
     setLoading(true);
     setHtml("");
 
-    try {
-      const res = await fetch("http://localhost:3000/generate-portfolio", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
+    const BASE_URL = "https://axiorai-backend.onrender.com";
 
-      const data = await res.json();
-      setHtml(data.html);
+try {
+  const res = await fetch(`${BASE_URL}/generate-portfolio`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(formData),
+  });
 
-      await logActivity("Built Portfolio");
-    } catch (err) {
-      alert("Error generating portfolio");
-    } finally {
-      setLoading(false);
-    }
+  if (!res.ok) {
+    throw new Error("Failed to generate portfolio");
+  }
+
+  const data = await res.json();
+  setHtml(data.html);
+
+  await logActivity("Built Portfolio");
+
+} catch (err) {
+  console.error(err);
+  alert("Something went wrong ❌");
+} finally {
+  setLoading(false);
+}
   };
 
   const downloadZip = async () => {

@@ -30,18 +30,20 @@ export default function CaptionGenerator() {
     try {
       setLoading(true);
 
-      const res = await fetch("http://localhost:3000/generate-caption", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          description,
-          variants,
-          hashtags,
-          emojis,
-        }),
-      });
+     const BASE_URL = "https://axiorai-backend.onrender.com";
+
+const res = await fetch(`${BASE_URL}/generate-caption`, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    description,
+    variants,
+    hashtags,
+    emojis,
+  }),
+});
 
       const data = await res.json();
 

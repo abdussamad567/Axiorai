@@ -27,30 +27,38 @@ export default function InterviewSimulator() {
 
     setLoading(true);
 
-    try {
-      await logActivity("Started Interview Simulator");
+    const BASE_URL = "https://axiorai-backend.onrender.com";
 
-      const res = await fetch("http://localhost:3000/interview", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          jobDescription: jobDesc,
-          portfolio,
-          resumeText: resume ? resume.name : "",
-        }),
-      });
+try {
+  await logActivity("Started Interview Simulator");
 
-      const data = await res.json();
+  const res = await fetch(`${BASE_URL}/interview`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      jobDescription: jobDesc,
+      portfolio,
+      resumeText: resume ? resume.name : "",
+    }),
+  });
 
-      setQuestions(data.questions);
-      setCurrent(0);
-    } catch {
-      alert("Error starting interview");
-    } finally {
-      setLoading(false);
-    }
+  if (!res.ok) {
+    throw new Error("Failed to generate interview questions");
+  }
+
+  const data = await res.json();
+
+  setQuestions(data.questions);
+  setCurrent(0);
+
+} catch (err) {
+  console.error(err);
+  alert("Something went wrong ❌");
+} finally {
+  setLoading(false);
+}
   };
 
   // NEXT QUESTION

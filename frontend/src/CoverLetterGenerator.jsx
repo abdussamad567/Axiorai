@@ -23,18 +23,20 @@ export default function CoverLetterGenerator() {
     try {
       setLoading(true);
 
-      const res = await fetch("http://localhost:3000/generate-cover-letter", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          jobTitle,
-          company,
-          jobDescription: jobDesc,
-          resumeText: resumeFile ? resumeFile.name : "",
-        }),
-      });
+     const BASE_URL = "https://axiorai-backend.onrender.com";
+
+const res = await fetch(`${BASE_URL}/generate-cover-letter`, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    jobTitle,
+    company,
+    jobDescription: jobDesc,
+    resumeText: resumeFile ? resumeFile.name : "",
+  }),
+});
 
       const data = await res.json();
       setResult(data.coverLetter);
